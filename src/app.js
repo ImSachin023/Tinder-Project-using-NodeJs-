@@ -2,27 +2,22 @@ const express = require("express")
 
 const app = express();
 
-//this will handle only GET call of /user
-app.get("/user",(req,res,next)=>{
-    console.log(req.params)
-    next();
-    // res.send({firstname:"Sachin",lastname:"Kumar"})
-},(req,res,next)=>{
-    console.log(req.params)
-    // res.send({firstname:"Sachin2",lastname:"Kumar2"})
-    next()
-},
-(req,res,next)=>{
-    console.log(req.params)
-    // res.send({firstname:"Sachin3",lastname:"Kumar3"})
-    next()
-},(req,res,next)=>{
-    console.log(req.params)
-    // res.send({firstname:"Sachin4",lastname:"Kumar4"})
-    next()
-},(req,res,next)=>{
-    console.log(req.params)
-    res.send({firstname:"Sachin5",lastname:"Kumar5"})
+const {AdminAuth,UserAuth} = require("./middlewares/auth")
+
+// this is the middleware
+app.use("/admin",AdminAuth)
+
+// this is for the admin to check the validation of the admin
+app.get("/admin/getAllUser",(req,res)=>{
+   res.send("Sent All Data")
+})
+app.get("/admin/deleteUser",(req,res)=>{
+   res.send("Delete a User")
+})
+
+// this is for the admin to check the validation of the User
+app.get("/user",UserAuth,(req,res)=>{
+   res.send("Sent All Data")
 })
 
 
