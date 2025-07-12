@@ -1,41 +1,31 @@
-const express = require("express")
-
+const express = require("express");
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-// const {AdminAuth,UserAuth} = require("./middlewares/auth")
+app.post("/signup", async (req, res) => {
+  //Creating a new instance of the User model
+  const user = new User({
+    firstName: "Sachin",
+    lastName: "kumar",
+    email: "Sachinabx3@gmail.com",
+    password: "Sachin@123",
+  });
+  try {
+    await user.save();
+    res.send("User Added successfully");
+  } catch (err) {
+    res.status(400).send("Error saving thr user :" + err.message);
+  }
+});
 
-// // this is the middleware
-// app.use("/admin",AdminAuth)
-
-// // this is for the admin to check the validation of the admin
-// app.get("/admin/getAllUser",(req,res)=>{
-//    res.send("Sent All Data")
-// })
-// app.get("/admin/deleteUser",(req,res)=>{
-//    res.send("Delete a User")
-// })
-
-// // this is for the admin to check the validation of the User
-// app.get("/user",UserAuth,(req,res)=>{
-//    res.send("Sent All Data")
-// })
-
-
-app .get ("/getUserData",(req,res)=>{
-    try {
-        throw new Error("sabdjyhfdvwshgfkjag");
-        res.send("user data send")
-    }
-    catch(err){
-        res.status(500).send("something Error contact support team")
-    }
-})
-app.use("/",(err,req,res,next)=>{
-    if(err){
-        res.status(500).send("something went wrong")
-    }
-})
-//create a server 
-app.listen("7777",()=>{
-    console.log("the server can listen successfully")
-})
+connectDB()
+  .then(() => {
+    console.log("Database is connected successfully");
+    app.listen("7777", () => {
+      console.log("the server can listen successfully");
+    });
+  })
+  .catch((err) => {
+    console.error("Connection is not establish!!");
+  });
