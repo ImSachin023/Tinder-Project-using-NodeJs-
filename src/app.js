@@ -49,18 +49,28 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
   try {
-    // here returnDOcument is for the sake of what data is send to DB -->"before" & "after" 
+    const ALLOWED_UPDATE = ["photoURL", "about", "gender", "age", "skills"];
+    const isUpdatedAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATE.includes(k)
+    );
+    if (!isUpdatedAllowed) {
+      throw new Error("Update not allowed");
+    }
+    if (data?.skills.length > 10) {
+      throw new Error("skills cannot be more than 10");
+    }
+    // here returnDOcument is for the sake of what data is send to DB -->"before" & "after" to view in console
     const user = await User.findOneAndUpdate({ _id: userId }, data, {
       returnDOcument: "after",
-      runValidators:true,
+      runValidators: true,
     });
     res.send("user updated successfully");
   } catch (error) {
-    res.status(400).send("UPDATE FAILED" + error.message);
+    res.status(400).send("UPDATE FAILED : " + error.message);
   }
 });
 
