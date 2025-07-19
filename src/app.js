@@ -4,8 +4,11 @@ const app = express();
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
@@ -33,27 +36,53 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  try{
-    const {emailId,password} = req.body;
+  try {
+    const { emailId, password } = req.body;
     //check email is in the database or not
-    const user = await User.findOne({emailId:emailId})
-    if(!user){
-      throw new Error("Invalid Credentials")
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error("Invalid Credentials");
     }
-    const isPasswordValid = await bcrypt.compare(password,user.password)
-    if(isPasswordValid){
-      res.send("Login Successfully")
-    }
-    else{
-      throw new Error("Invalid Credentials")
-    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      //Create a JWT token
+      const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$914");
 
-  }catch (err) {
+      //Add a token To cookie and send the RESPONSE back to the user
+      res.cookie("token", token);
+
+      res.send("Login Successfully");
+    } else {
+      throw new Error("Invalid Credentials");
+    }
+  } catch (err) {
     res.status(400).send("ERROR :" + err.message);
   }
-})
+});
 
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
 
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("Invalid Token");
+    }
+
+    const decodeMessage = await jwt.verify(token, "DEV@Tinder$914");
+    const { _id } = decodeMessage;
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+    console.log(cookies);
+    res.send(user);
+  } catch (err) {
+    res.status(400).send("ERROR :" + err.message);
+  }
+});
+
+// Get user by email
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
   try {
@@ -86,6 +115,7 @@ app.get("/feed", async (req, res) => {
   }
 });
 
+//Update data of the User
 app.patch("/user/:userId", async (req, res) => {
   const userId = req.params?.userId;
   const data = req.body;
@@ -111,6 +141,7 @@ app.patch("/user/:userId", async (req, res) => {
   }
 });
 
+//Delete a user from the database
 app.delete("/user", async (req, res) => {
   const userId = req.body.userId;
   try {
