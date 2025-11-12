@@ -32,7 +32,11 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
 });
 
 profileRouter.patch("/profile/password",userAuth,async (req,res)=>{
-  
+  try{
+    
+  } catch (err) {
+    res.status(400).send("ERROR :" + err.message);
+  }
 })
 
 module.exports = profileRouter;
