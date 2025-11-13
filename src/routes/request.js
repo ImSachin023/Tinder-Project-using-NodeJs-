@@ -1,14 +1,60 @@
-const express = require("express")
-const requestRouter = express.Router()
+const express = require("express");
+const requestRouter = express.Router();
 
 const { userAuth } = require("../middlewares/auth");
+const ConnectionRequestModel = require("../models/connectionRequest");
+const user = require("../models/user");
 
+requestRouter.post(
+  "/request/send/:status/:toUserId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const fromUserId = req.user._id;
+      const toUserId = req.params.toUserId;
+      const status = req.params.status;
 
-requestRouter.post("/sendrequest", userAuth, async (req, res) => {
-  const user = req.user;
-  console.log("sending the connection request");
-  res.send(user.firstName + "send the connection request");
-});
+      const allowedStatus = ["ignored", "interested"];
+      if (!allowedStatus.includes(status)) {
+        return res
+          .status(400)
+          .json({ message: "Invalid status value :" + message });
+      }
 
+      // Check if toUserId exists in the database
+      const toUser = await user.findById(toUserId);
+      if (!toUser) {
+        return res.status(404).json({ message: "To User not found" });
+      }
 
-module.exports = requestRouter
+      //if there is a existing connection request
+      const existingConnectionRequest = await ConnectionRequestModel.findOne({
+        $or: [
+          { fromUserId, toUserId },
+          { fromUserId: toUserId, toUserId: fromUserId },
+        ],
+      });
+      if (existingConnectionRequest) {
+        return res.status(400).send(" Connection request already exists ");
+      }
+
+      // Create a new connection request
+      const connectionRequest = new ConnectionRequestModel({
+        fromUserId,
+        toUserId,
+        status,
+      });
+
+      const data = await connectionRequest.save();
+      res.json({
+        message:
+        req.user.firstName + " is " + status + " in " + toUser.firstName,
+        data,
+      });
+    } catch (err) {
+      res.status(400).send("ERROR :" + err.message);
+    }
+  }
+);
+
+module.exports = requestRouter;

@@ -14,13 +14,26 @@ const connectionRequestSchema = new moongose.Schema(
       type: String,
       required: true,
       enum: {
-        values: ["ignore", "interested", "accepted", "rejected"],
+        values: ["ignored", "interested", "accepted", "rejected"],
         message: "{VALUE} is incorrect status type",
       },
     },
   },
   { timestamps: true }
 );
+
+// to search faster of user
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+
+// this is for the sending request to yourself
+connectionRequestSchema.pre("save",function (next){
+    const connectionRequest = this;
+    // Check if the fromUserId is same as toUserId
+    if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){
+        throw new Error("Cannot send connection Request to yourself!");
+    }
+    next();
+});
 
 const ConnectionRequestModel = new moongose.model(
   "ConnectionRequest",
