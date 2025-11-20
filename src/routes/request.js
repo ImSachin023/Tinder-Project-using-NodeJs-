@@ -2,7 +2,7 @@ const express = require("express");
 const requestRouter = express.Router();
 
 const { userAuth } = require("../middlewares/auth");
-const ConnectionRequestModel = require("../models/connectionRequest");
+const ConnectionRequest = require("../models/connectionRequest");
 const user = require("../models/user");
 
 requestRouter.post(
@@ -28,7 +28,7 @@ requestRouter.post(
       }
 
       //if there is a existing connection request
-      const existingConnectionRequest = await ConnectionRequestModel.findOne({
+      const existingConnectionRequest = await ConnectionRequest.findOne({
         $or: [
           { fromUserId, toUserId },
           { fromUserId: toUserId, toUserId: fromUserId },
@@ -39,13 +39,14 @@ requestRouter.post(
       }
 
       // Create a new connection request
-      const connectionRequest = new ConnectionRequestModel({
+      const connectionRequest = new ConnectionRequest({
         fromUserId,
         toUserId,
         status,
       });
 
       const data = await connectionRequest.save();
+      
       res.json({
         message:
           req.user.firstName + " is " + status + " in " + toUser.firstName,
@@ -70,7 +71,7 @@ requestRouter.post(
         return res.status(400).json({ message: "Status not allowed!" });
       }
 
-      const connectionRequest = await ConnectionRequestModel.findOne({
+      const connectionRequest = await ConnectionRequest.findOne({
         _id: requestId,
         toUserId: loggedInUser._id,
         status: "interested",

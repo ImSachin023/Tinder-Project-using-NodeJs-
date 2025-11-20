@@ -4,6 +4,7 @@ const connectionRequestSchema = new moongose.Schema(
   {
     fromUserId: {
       type: moongose.Schema.Types.ObjectId,
+      ref: "User", // Reference to the  User collection
       required: true,
     },
     toUserId: {
@@ -35,8 +36,8 @@ connectionRequestSchema.pre("save",function (next){
     next();
 });
 
-const ConnectionRequestModel = new moongose.model(
+const ConnectionRequest = new moongose.model(
   "ConnectionRequest",
   connectionRequestSchema
 );
-module.exports = ConnectionRequestModel;
+module.exports = ConnectionRequest;
