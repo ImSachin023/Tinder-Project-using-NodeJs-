@@ -9,6 +9,7 @@ const connectionRequestSchema = new moongose.Schema(
     },
     toUserId: {
       type: moongose.Schema.Types.ObjectId,
+      ref: "User", 
       required: true,
     },
     status: {
