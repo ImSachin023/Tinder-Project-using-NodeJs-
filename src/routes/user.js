@@ -4,7 +4,7 @@ const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 const userRouter = express.Router();
 
-const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
+const USER_SAFE_DATA = "firstName lastName photoURL age gender about skills";
 
 // Get all pending connection requests for the authenticated user
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
