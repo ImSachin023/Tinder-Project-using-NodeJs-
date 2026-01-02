@@ -44,9 +44,9 @@ const UserSchema = mongoose.Schema(
     },
     gender: {
       type: String,
-      enum:{
-        values: ["male", "female", "others"],
-        message: `{VALUE} is not a gender type`
+      enum: {
+        values: ["Male", "Female", "others"],
+        message: `{VALUE} is not a gender type`,
       },
       // validate(value) {
       //   if (!["male", "female", "others"].includes(value)) {
@@ -57,7 +57,7 @@ const UserSchema = mongoose.Schema(
     photoURL: {
       type: String,
       default:
-        "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngfind.com%2Fmpng%2Fxiihwx_download-empty-profile-hd-png-download%2F&psig=AOvVaw3GhsS1mznuGiOEv9EWzt_s&ust=1752842092927000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCOjBsOfzw44DFQAAAAAdAAAAABAE",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO4fSImleV6t5kyYU067ZPx8sSHHixQ_-8Og&s",
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error("invalid photo URL :" + value);
