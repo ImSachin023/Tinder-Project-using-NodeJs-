@@ -58,8 +58,8 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
       process.env.RAZORPAY_WEBHOOK_SECRET
     );
 
-    if(!isWebhookValid){
-      return res.status(400).json({message: " Webhook signature is invalid"});
+    if (!isWebhookValid) {
+      return res.status(400).json({ message: " Webhook signature is invalid" });
     }
 
     // Update my payment Status in DB
@@ -76,11 +76,17 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     // return success response to razorpay
     return res.status(200).json({ message: "Webhook received successfully" });
-
-
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
+});
+
+paymentRouter.get("/premium/verify", userAuth, async (req, res) => {
+  const user = req.user.toJSON();
+  if (user.isPremium) {
+    return res.json({ ...user });
+  }
+  return res.json({ ...user });
 });
 
 module.exports = paymentRouter;
