@@ -1,5 +1,5 @@
 const express = require("express");
-const connectDB = require("./src/config/database");
+const connectDB = require("./config/database");
 const app = express();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -18,13 +18,13 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-const authRouter = require("./src/routes/auth");
-const profileRouter = require("./src/routes/profile");
-const requestRouter = require("./src/routes/request");
-const userRouter = require("./src/routes/user");
-const paymentRouter = require("./src/routes/payment");
-const initialiseSocket = require("./src/utils/socket");
-const chatRouter = require("./src/routes/chat");
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/request");
+const userRouter = require("./routes/user");
+const paymentRouter = require("./routes/payment");
+const initialiseSocket = require("./utils/socket");
+const chatRouter = require("./routes/chat");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
