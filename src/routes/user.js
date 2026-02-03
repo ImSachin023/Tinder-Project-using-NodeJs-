@@ -39,6 +39,8 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
 
     // Extract only the connected user data
     const data = connectionRequests.map((row) => {
+      if (!row?.fromUserId || !row?.toUserId || !loggedInUser) return null;
+
       if (row.fromUserId._id.toString() === loggedInUser._id.toString()) {
         return row.toUserId;
       }
@@ -71,20 +73,17 @@ userRouter.get("/feed", userAuth, async (req, res) => {
       hideUserFromFeed.add(req.toUserId.toString());
     });
 
-    const users = await User
-      .find({
-        $and: [
-          { _id: { $nin: Array.from(hideUserFromFeed) } },
-          { _id: { $ne: loggedInUser._id } },
-        ],
-      })
+    const users = await User.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUserFromFeed) } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    })
       .select(USER_SAFE_DATA)
       .skip(skip)
       .limit(limit);
 
-    res.json({data : users});
-
-
+    res.json({ data: users });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
