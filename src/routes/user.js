@@ -63,6 +63,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
 
     const skip = (page - 1) * limit;
 
+    //Find all Connection request (send + received)
     const connectionRequests = await ConnectionRequest.find({
       $or: [{ toUserId: loggedInUser._id }, { fromUserId: loggedInUser._id }],
     }).select("fromUserId toUserId");
