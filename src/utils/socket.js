@@ -13,14 +13,13 @@ const getSecretRoomId = (userId, targetUserId) => {
 const initialiseSocket = (server) => {
   const io = socket(server, {
     cors: {
-      origin: "http://localhost:5173" && "https://dev-coder-nu.vercel.app/",
+      origin: "http://localhost:5173" && "https://dev-coder-nu.vercel.app",
     },
   });
   io.on("connection", (socket) => {
     // Handle Events
     socket.on("joinChat", ({ firstName, userId, targetUserId }) => {
       const roomId = getSecretRoomId(userId, targetUserId);
-      console.log(firstName + " joined Room: " + roomId);
       socket.join(roomId);
     });
 
@@ -29,7 +28,6 @@ const initialiseSocket = (server) => {
       async ({ firstName, lastName, userId, targetUserId, text }) => {
         try {
           const roomId = getSecretRoomId(userId, targetUserId);
-          console.log(firstName + " " + text);
           // save message to database here
           let chat = await Chat.findOne({
             participants: { $all: [userId, targetUserId] },
