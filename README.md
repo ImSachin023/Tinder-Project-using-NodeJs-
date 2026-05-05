@@ -2,7 +2,6 @@
 📌 Project Overview
 
 This project is a Tinder-like Project Where Developers can Meet application backend built using modern web technologies. It provides APIs to manage user profiles, swiping (like/dislike), and fetching matchable users.
-
 The goal of this project is to demonstrate real-world backend development skills, including REST APIs, database integration, and deployment.
 
 --------------------------------------------
